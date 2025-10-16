@@ -4,6 +4,12 @@ import numpy as np
 import yfinance as yf
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
+import os
+import logging
+
+# Configure logging to a file
+logging.basicConfig(filename='debug_log.txt', level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 st.set_page_config(layout="wide")
 
@@ -22,10 +28,16 @@ long_window = st.sidebar.slider("Long Moving Average Window", 20, 200, 50)
 # Fetch data
 @st.cache_data
 def get_stock_data(ticker, start, end):
+    logging.info(f"Attempting to fetch data for {ticker} from {start} to {end}")
     try:
         data = yf.download(ticker, start=start, end=end)
+        if data.empty:
+            logging.warning(f"No data returned for {ticker}.")
+        else:
+            logging.info(f"Successfully fetched data for {ticker}. Shape: {data.shape}")
         return data
     except Exception as e:
+        logging.error(f"Error fetching data for {ticker}: {e}")
         st.error(f"Error fetching data for {ticker}: {e}")
         return None
 
@@ -35,26 +47,43 @@ if stock_data is not None and not stock_data.empty:
     st.subheader(f"Historical Data for {ticker_symbol}")
     st.dataframe(stock_data.tail())
 
+    logging.info(f"DataFrame is not empty. Proceeding with SMA calculations. Initial shape: {stock_data.shape}")
+
     # Calculate Moving Averages
     stock_data["SMA_" + str(short_window)] = stock_data["Close"].rolling(window=short_window).mean()
     stock_data["SMA_" + str(long_window)] = stock_data["Close"].rolling(window=long_window).mean()
 
+    logging.info(f"DataFrame shape after SMA calculation (before dropna): {stock_data.shape}")
+    logging.info(f"NaNs in SMA_{short_window} before dropna: {stock_data[f'SMA_{short_window}'].isnull().sum()}")
+    logging.info(f"NaNs in SMA_{long_window} before dropna: {stock_data[f'SMA_{long_window}'].isnull().sum()}")
+
     # Drop NaN values that result from rolling mean calculation to ensure plotting works correctly
-    # This ensures that only rows with valid SMA values are used for plotting and signal generation.
     stock_data.dropna(inplace=True)
 
+    logging.info(f"DataFrame shape after dropna: {stock_data.shape}")
+    logging.info(f"NaNs in SMA_{short_window} after dropna: {stock_data[f'SMA_{short_window}'].isnull().sum()}")
+    logging.info(f"NaNs in SMA_{long_window} after dropna: {stock_data[f'SMA_{long_window}'].isnull().sum()}")
+
     if not stock_data.empty:
+        # Save processed data to CSV for debugging
+        debug_csv_path = "processed_stock_data.csv"
+        stock_data.to_csv(debug_csv_path)
+        logging.info(f"Processed stock data saved to {debug_csv_path} for debugging.")
+        st.write(f"Processed stock data saved to {debug_csv_path} for debugging.")
+
         # Generate Trading Signals
         stock_data["Signal"] = 0
-        # Ensure we only access valid indices after dropping NaNs
-        stock_data["Signal"] = np.where(stock_data["SMA_" + str(short_window)] > stock_data["SMA_" + str(long_window)], 1, 0)
+        stock_data["Signal"] = np.where(stock_data[f"SMA_{short_window}"] > stock_data[f"SMA_{long_window}"], 1, 0)
         stock_data["Position"] = stock_data["Signal"].diff()
+
+        logging.info(f"Buy Signals: {stock_data[stock_data['Position'] == 1].shape[0]}")
+        logging.info(f"Sell Signals: {stock_data[stock_data['Position'] == -1].shape[0]}")
 
         st.subheader("Trading Strategy Visualization (SMA Crossover)")
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data["Close"], mode="lines", name="Close Price", line=dict(color="lightgray")))
-        fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data["SMA_" + str(short_window)], mode="lines", name=f"SMA {short_window}", line=dict(color="blue")))
-        fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data["SMA_" + str(long_window)], mode="lines", name=f"SMA {long_window}", line=dict(color="red")))
+        fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data[f"SMA_{short_window}"], mode="lines", name=f"SMA {short_window}", line=dict(color="blue")))
+        fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data[f"SMA_{long_window}"], mode="lines", name=f"SMA {long_window}", line=dict(color="red")))
 
         # Add buy signals
         buy_signals = stock_data[stock_data["Position"] == 1]
