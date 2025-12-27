@@ -42,8 +42,8 @@ if stock_data is not None and not stock_data.empty:
     plot_data = data_with_sma.dropna()
 
     if not plot_data.empty:
-        plot_data["Signal"] = 0
-        plot_data["Signal"] = pd.Series(plot_data[f"SMA_{short_window}"] > plot_data[f"SMA_{long_window}"], dtype=int)
+        # Generate trading signals: 1 when short SMA > long SMA, 0 otherwise
+        plot_data["Signal"] = (plot_data[f"SMA_{short_window}"] > plot_data[f"SMA_{long_window}"]).astype(int)
         plot_data["Position"] = plot_data["Signal"].diff()
 
         # --- Plotting ---
