@@ -1,5 +1,19 @@
-streamlit
-pandas
-numpy
-yfinance
-plotly
+# Core packages
+streamlit>=1.52.0
+pandas>=2.0.0
+numpy>=1.24.0
+yfinance>=1.0
+plotly>=6.0.0
+
+# yfinance dependencies
+beautifulsoup4>=4.12.0
+curl-cffi>=0.7,<0.14
+websockets>=13.0
+platformdirs>=4.0.0
+frozendict>=2.4.0
+lxml>=4.9.0
+html5lib>=1.1
+peewee>=3.17.0
+
+# Additional utilities
+python-dateutil>=2.8.0

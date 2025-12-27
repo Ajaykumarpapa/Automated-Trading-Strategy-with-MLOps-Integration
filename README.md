@@ -32,13 +32,38 @@ pip install -r requirements.txt
 
 ## Usage
 
+### Option 1: Run Locally
+
 Run the Streamlit application:
 
 ```bash
 streamlit run tradingstrategy.py
 ```
 
+Or use the provided run script:
+
+```bash
+./run.sh
+```
+
 The application will open in your default web browser at `http://localhost:8501`.
+
+### Option 2: Run with Docker
+
+Build and run using Docker:
+
+```bash
+docker build -t trading-strategy .
+docker run -p 8501:8501 trading-strategy
+```
+
+Or use Docker Compose:
+
+```bash
+docker-compose up
+```
+
+The application will be available at `http://localhost:8501`.
 
 ### How to Use
 
@@ -79,34 +104,77 @@ The application demonstrates how MLOps principles can be applied to trading stra
 
 ```
 .
-├── tradingstrategy.py    # Main Streamlit application
-├── requirements.txt      # Python dependencies
-├── README.md            # Project documentation
-└── .gitignore          # Git ignore rules
+├── tradingstrategy.py       # Main Streamlit application
+├── config.py               # Configuration settings
+├── test_app.py            # Test suite
+├── requirements.txt       # Python dependencies
+├── Dockerfile             # Docker container definition
+├── docker-compose.yml     # Docker Compose configuration
+├── .dockerignore         # Docker ignore rules
+├── .gitignore           # Git ignore rules
+├── .github/
+│   └── workflows/
+│       └── ci.yml       # CI/CD pipeline
+├── run.sh              # Application runner script
+└── README.md          # Project documentation
 ```
 
 ## Dependencies
 
-- streamlit: Web application framework
-- pandas: Data manipulation
-- numpy: Numerical computing
-- yfinance: Stock market data
-- plotly: Interactive visualizations
+### Core Dependencies
+- **streamlit**: Web application framework
+- **pandas**: Data manipulation and analysis
+- **numpy**: Numerical computing
+- **yfinance**: Stock market data fetching
+- **plotly**: Interactive visualizations
+
+### Additional Dependencies
+- **beautifulsoup4**: HTML parsing for data scraping
+- **curl-cffi**: HTTP client for yfinance
+- **websockets**: Real-time data support
+- **lxml**: XML/HTML processing
+
+See `requirements.txt` for complete list with version constraints.
 
 ## Disclaimer
 
 This application is for educational purposes only. It is not financial advice. Always do your own research and consult with a qualified financial advisor before making investment decisions.
 
+## Testing
+
+Run the test suite to verify the installation:
+
+```bash
+python test_app.py
+```
+
+This will test:
+- Module imports
+- Syntax validation
+- Data fetching capabilities
+- SMA calculation logic
+
+## CI/CD Pipeline
+
+The project includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that automatically:
+- Runs tests on push/pull requests
+- Performs code quality checks
+- Builds Docker images
+- Can be extended for automated deployments
+
 ## Future Enhancements
 
 - [ ] Implement additional trading strategies (RSI, MACD, Bollinger Bands)
-- [ ] Add backtesting functionality
+- [ ] Add backtesting functionality with performance metrics
 - [ ] Integrate machine learning models for prediction
 - [ ] Add portfolio management features
-- [ ] Implement real MLOps pipeline with MLflow
-- [ ] Add unit tests and integration tests
-- [ ] Create Docker containerization
+- [ ] Implement real MLOps pipeline with MLflow tracking
+- [ ] Add comprehensive unit tests and integration tests
+- [x] Create Docker containerization
 - [ ] Add database for storing historical data
+- [ ] Implement real-time streaming data
+- [ ] Add authentication and user management
+- [ ] Create REST API endpoints
 
 ## License
 

@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  trading-strategy:
+    build: .
+    container_name: trading-strategy-app
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount for live code updates during development
+      - ./tradingstrategy.py:/app/tradingstrategy.py
+    restart: unless-stopped
+    networks:
+      - trading-network
+
+  # Future MLOps services can be added here
+  # mlflow:
+  #   image: ghcr.io/mlflow/mlflow:latest
+  #   ports:
+  #     - "5000:5000"
+  #   networks:
+  #     - trading-network
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - trading-network
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - trading-network
+
+networks:
+  trading-network:
+    driver: bridge
