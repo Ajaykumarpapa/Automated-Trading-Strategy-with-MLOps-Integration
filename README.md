@@ -108,15 +108,41 @@ The application demonstrates how MLOps principles can be applied to trading stra
 ├── config.py               # Configuration settings
 ├── test_app.py            # Test suite
 ├── requirements.txt       # Python dependencies
+├── README.md             # Project documentation
+├── DEPLOYMENT.md        # Deployment guide
+│
+├── Docker Files
 ├── Dockerfile             # Docker container definition
 ├── docker-compose.yml     # Docker Compose configuration
 ├── .dockerignore         # Docker ignore rules
-├── .gitignore           # Git ignore rules
+│
+├── Cloud Deployment
+├── Procfile              # Heroku configuration
+├── setup.sh             # Heroku setup script
+├── app.yaml            # Google App Engine config
+├── .env.example       # Environment variables template
+│
+├── Kubernetes
+├── k8s/
+│   ├── deployment.yaml   # K8s deployment manifest
+│   ├── ingress.yaml     # K8s ingress configuration
+│   └── README.md       # K8s deployment guide
+│
+├── Deployment Scripts
+├── scripts/
+│   ├── deploy-heroku.sh  # Heroku deployment
+│   ├── deploy-docker.sh  # Docker Hub deployment
+│   ├── deploy-aws.sh    # AWS EC2 deployment
+│   └── deploy-gcp.sh   # Google Cloud deployment
+│
+├── Configuration
+├── .streamlit/
+│   └── config.toml      # Streamlit configuration
 ├── .github/
 │   └── workflows/
 │       └── ci.yml       # CI/CD pipeline
-├── run.sh              # Application runner script
-└── README.md          # Project documentation
+├── .gitignore          # Git ignore rules
+└── run.sh             # Application runner script
 ```
 
 ## Dependencies
@@ -161,6 +187,53 @@ The project includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that
 - Performs code quality checks
 - Builds Docker images
 - Can be extended for automated deployments
+
+## Deployment
+
+Ready to deploy your application? See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive deployment guides.
+
+### Quick Deploy Options
+
+**🚀 Streamlit Cloud (Easiest - Free)**
+```bash
+# 1. Push code to GitHub (done!)
+# 2. Go to share.streamlit.io
+# 3. Connect repository
+# 4. Deploy in 2 minutes!
+```
+
+**🐳 Docker (Recommended)**
+```bash
+# Use automated script
+./scripts/deploy-docker.sh yourusername
+
+# Or manually
+docker build -t trading-strategy .
+docker run -p 8501:8501 trading-strategy
+```
+
+**☁️ Cloud Platforms**
+```bash
+# Heroku
+./scripts/deploy-heroku.sh your-app-name
+
+# AWS EC2
+./scripts/deploy-aws.sh ec2-ip-address key-file.pem
+
+# Google Cloud Run
+./scripts/deploy-gcp.sh your-project-id
+```
+
+### Deployment Files
+
+- `DEPLOYMENT.md` - Complete deployment guide for all platforms
+- `Procfile` - Heroku configuration
+- `setup.sh` - Heroku setup script
+- `app.yaml` - Google App Engine configuration
+- `k8s/` - Kubernetes manifests
+- `scripts/` - Automated deployment scripts
+
+For detailed instructions, troubleshooting, and best practices, see **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 
 ## Future Enhancements
 

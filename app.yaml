@@ -1,0 +1,15 @@
+# Google Cloud App Engine Configuration
+runtime: python311
+
+instance_class: F2
+
+env_variables:
+  PYTHONUNBUFFERED: "1"
+
+entrypoint: streamlit run tradingstrategy.py --server.port=$PORT --server.address=0.0.0.0
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 5
+  target_cpu_utilization: 0.65
+  target_throughput_utilization: 0.65

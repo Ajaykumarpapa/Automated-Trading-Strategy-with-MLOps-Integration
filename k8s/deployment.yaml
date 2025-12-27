@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trading-strategy
+  labels:
+    app: trading-strategy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: trading-strategy
+  template:
+    metadata:
+      labels:
+        app: trading-strategy
+    spec:
+      containers:
+      - name: trading-strategy
+        image: yourusername/trading-strategy:latest
+        ports:
+        - containerPort: 8501
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trading-strategy
+spec:
+  type: LoadBalancer
+  selector:
+    app: trading-strategy
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8501
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: trading-strategy-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: trading-strategy
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
