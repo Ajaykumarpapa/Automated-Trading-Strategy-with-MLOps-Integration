@@ -77,7 +77,9 @@ def test_syntax():
     """Test if the main script has no syntax errors"""
     print("\nTesting main script syntax...")
     try:
-        with open('tradingstrategy.py', 'r') as f:
+        import os
+        script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tradingstrategy.py')
+        with open(script_path, 'r') as f:
             code = f.read()
         compile(code, 'tradingstrategy.py', 'exec')
         print("✓ No syntax errors in tradingstrategy.py")

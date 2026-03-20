@@ -80,9 +80,11 @@ The application demonstrates how MLOps principles can be applied to trading stra
 ```
 .
 ├── tradingstrategy.py    # Main Streamlit application
+├── test_app.py          # Test suite
+├── run.sh               # Startup script
 ├── requirements.txt      # Python dependencies
 ├── README.md            # Project documentation
-└── .gitignore          # Git ignore rules
+└── .gitignore           # Git ignore rules
 ```
 
 ## Dependencies
